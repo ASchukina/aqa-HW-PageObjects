@@ -43,12 +43,4 @@ public class DataHelper {
     public static Transfer getValueTransfer(Integer maxValue, String card) {
         return new Transfer(new Random().nextInt(maxValue), card);
     }
-
-    public static Transfer getFirstTransfer() {
-        return new Transfer(2000, card2);
-    }
-
-    public static Transfer getSecondTransfer() {
-        return new Transfer(6000, card1);
-    }
 }

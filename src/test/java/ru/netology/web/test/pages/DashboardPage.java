@@ -25,9 +25,6 @@ public class DashboardPage {
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
 
-//    public Dashboard() {
-//    }
-
     public int getFirstCardBalance() {
         val text = cards.first().text();
         return extractBalance(text);

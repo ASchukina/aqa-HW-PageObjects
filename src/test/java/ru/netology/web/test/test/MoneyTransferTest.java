@@ -1,6 +1,7 @@
 package ru.netology.web.test.test;
 
 //import lombok.var;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,8 +44,8 @@ class MoneyTransferTest {
         var actualBalanceOfFirstCard = dashboardPage.getFirstCardBalance();
         var actualBalanceOfSecondCard = dashboardPage.getSecondCardBalance();
 
-        Assertions.assertEquals(firstCardValue + transfer.getAmount(), actualBalanceOfFirstCard);
-        Assertions.assertEquals(secondCardValue - transfer.getAmount(), actualBalanceOfSecondCard);
+        Assertions.assertEquals(secondCardValue + transfer.getAmount(), actualBalanceOfSecondCard);
+        Assertions.assertEquals(firstCardValue - transfer.getAmount(), actualBalanceOfFirstCard);
     }
 
     @Test
@@ -72,5 +73,52 @@ class MoneyTransferTest {
 
         Assertions.assertEquals(firstCardValue + transfer.getAmount(), actualBalanceOfFirstCard);
         Assertions.assertEquals(secondCardValue - transfer.getAmount(), actualBalanceOfSecondCard);
+    }
+
+    @Test
+    @DisplayName("Должен появиться попап с ошибкой")
+    void shouldNotTransfer() {
+        open("http://localhost:9999");
+
+        var loginPage = new LoginPageV1();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        var firstCardValue = dashboardPage.getFirstCardBalance();
+        var secondCardValue = dashboardPage.getSecondCardBalance();
+
+        var transferPage = dashboardPage.clickOnFirstButton();
+
+        var expectedErrorNotitfication = transferPage.emptyTransfer("Ошибка");
+
+    }
+
+    @Test
+    @DisplayName("Отмена на странице перевода")
+    void shouldNotTransferMoneyBecauseOfCancel() {
+        open("http://localhost:9999");
+
+        var loginPage = new LoginPageV1();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        var firstCardValue = dashboardPage.getFirstCardBalance();
+        var secondCardValue = dashboardPage.getSecondCardBalance();
+
+        var transferPage = dashboardPage.clickOnFirstButton();
+
+        var transfer = DataHelper.getValueTransfer(Math.abs(secondCardValue), card2);
+
+        var anotherPage = transferPage.cancelTransfer(transfer);
+
+        var actualBalanceOfFirstCard = dashboardPage.getFirstCardBalance();
+        var actualBalanceOfSecondCard = dashboardPage.getSecondCardBalance();
+
+        Assertions.assertEquals(firstCardValue, actualBalanceOfFirstCard);
+        Assertions.assertEquals(secondCardValue, actualBalanceOfSecondCard);
     }
 }
