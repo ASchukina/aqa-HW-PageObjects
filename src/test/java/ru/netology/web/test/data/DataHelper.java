@@ -40,7 +40,7 @@ public class DataHelper {
         private String cardFrom;
     }
 
-    public static Transfer getValueTransfer(Integer maxValue, String card) {
+    public static Transfer getValidTransfer(Integer maxValue, String card) {
         return new Transfer(new Random().nextInt(maxValue), card);
     }
 }

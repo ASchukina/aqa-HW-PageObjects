@@ -37,7 +37,7 @@ class MoneyTransferTest {
 
         var transferPage = dashboardPage.clickOnSecondButton();
 
-        var transfer = DataHelper.getValueTransfer(Math.abs(firstCardValue), card1);
+        var transfer = DataHelper.getValidTransfer(Math.abs(firstCardValue), card1);
 
         var anotherPage = transferPage.successfulTransfer(transfer);
 
@@ -64,7 +64,7 @@ class MoneyTransferTest {
 
         var transferPage = dashboardPage.clickOnFirstButton();
 
-        var transfer = DataHelper.getValueTransfer(Math.abs(secondCardValue), card2);
+        var transfer = DataHelper.getValidTransfer(Math.abs(secondCardValue), card2);
 
         var anotherPage = transferPage.successfulTransfer(transfer);
 
@@ -76,7 +76,7 @@ class MoneyTransferTest {
     }
 
     @Test
-    @DisplayName("Должен появиться попап с ошибкой")
+    @DisplayName("Пустые поля на странице перевода средств")
     void shouldNotTransfer() {
         open("http://localhost:9999");
 
@@ -111,7 +111,7 @@ class MoneyTransferTest {
 
         var transferPage = dashboardPage.clickOnFirstButton();
 
-        var transfer = DataHelper.getValueTransfer(Math.abs(secondCardValue), card2);
+        var transfer = DataHelper.getValidTransfer(Math.abs(secondCardValue), card2);
 
         var anotherPage = transferPage.cancelTransfer(transfer);
 
@@ -120,5 +120,45 @@ class MoneyTransferTest {
 
         Assertions.assertEquals(firstCardValue, actualBalanceOfFirstCard);
         Assertions.assertEquals(secondCardValue, actualBalanceOfSecondCard);
+    }
+
+    @Test
+    @DisplayName("Перевод средств больше доступного лимита")
+    void shouldNotTransferMoneyBecauseOfOverLimit() {
+        open("http://localhost:9999");
+
+        var loginPage = new LoginPageV1();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        var firstCardValue = dashboardPage.getFirstCardBalance();
+        var secondCardValue = dashboardPage.getSecondCardBalance();
+
+        var transferPage = dashboardPage.clickOnFirstButton();
+
+        var expectedErrorNotitfication = transferPage.unSuccessfulTransfer("Ошибка");
+
+    }
+
+    @Test
+    @DisplayName("Перевод c первой карты на первую")
+    void shouldNotTransferMoneyBecauseOfOneToOne() {
+        open("http://localhost:9999");
+
+        var loginPage = new LoginPageV1();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        var firstCardValue = dashboardPage.getFirstCardBalance();
+        var secondCardValue = dashboardPage.getSecondCardBalance();
+
+        var transferPage = dashboardPage.clickOnFirstButton();
+
+        var expectedErrorNotitfication = transferPage.oneToOneTransfer("Ошибка");
+
     }
 }

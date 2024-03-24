@@ -33,4 +33,20 @@ public class TransferPage {
         return new DashboardPage();
     }
 
+    public TransferPage unSuccessfulTransfer(String expectedError) {
+        $("[data-test-id='amount'] input").setValue("15000");
+        $("[data-test-id='from'] input").setValue(DataHelper.card2);
+        $("[data-test-id='action-transfer']").click();
+        $("[data-test-id='error-notification']").shouldBe(visible);
+        return new TransferPage();
+    }
+
+    public TransferPage oneToOneTransfer(String expectedError) {
+        $("[data-test-id='amount'] input").setValue("1000");
+        $("[data-test-id='from'] input").setValue(DataHelper.card1);
+        $("[data-test-id='action-transfer']").click();
+        $("[data-test-id='error-notification']").shouldBe(visible);
+        return new TransferPage();
+    }
+
 }
