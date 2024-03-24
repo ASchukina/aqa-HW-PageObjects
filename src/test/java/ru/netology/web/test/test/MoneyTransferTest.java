@@ -10,6 +10,8 @@ import ru.netology.web.test.data.DataHelper;
 import ru.netology.web.test.pages.DashboardPage;
 import ru.netology.web.test.pages.LoginPageV1;
 
+import java.util.Random;
+
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
@@ -91,7 +93,7 @@ class MoneyTransferTest {
 
         var transferPage = dashboardPage.clickOnFirstButton();
 
-        var expectedErrorNotitfication = transferPage.emptyTransfer("Ошибка");
+        var expectedErrorNotitfication = transferPage.emptyTransfer("Ошибка" + "Ошибка! Произошла ошибка");
 
     }
 
@@ -138,7 +140,17 @@ class MoneyTransferTest {
 
         var transferPage = dashboardPage.clickOnFirstButton();
 
-        var expectedErrorNotitfication = transferPage.unSuccessfulTransfer("Ошибка");
+        var transfer = DataHelper.getValidTransfer(Math.abs(secondCardValue + new Random().nextInt(20_000)), card2);
+
+        var anotherPage = transferPage.successfulTransfer(transfer);
+
+        transferPage.errorOnTheSite("Ошибка" + "Ошибка! Произошла ошибка");
+
+        var actualBalanceOfFirstCard = dashboardPage.getFirstCardBalance();
+        var actualBalanceOfSecondCard = dashboardPage.getSecondCardBalance();
+
+        Assertions.assertEquals(firstCardValue, actualBalanceOfFirstCard);
+        Assertions.assertEquals(secondCardValue, actualBalanceOfSecondCard);
 
     }
 
@@ -158,7 +170,17 @@ class MoneyTransferTest {
 
         var transferPage = dashboardPage.clickOnFirstButton();
 
-        var expectedErrorNotitfication = transferPage.oneToOneTransfer("Ошибка");
+        var transfer = DataHelper.getValidTransfer(Math.abs(firstCardValue), card1);
+
+        var anotherPage = transferPage.successfulTransfer(transfer);
+
+        transferPage.errorOnTheSite("Ошибка" + "Ошибка! Произошла ошибка");
+
+        var actualBalanceOfFirstCard = dashboardPage.getFirstCardBalance();
+        var actualBalanceOfSecondCard = dashboardPage.getSecondCardBalance();
+
+        Assertions.assertEquals(firstCardValue, actualBalanceOfFirstCard);
+        Assertions.assertEquals(secondCardValue, actualBalanceOfSecondCard);
 
     }
 }

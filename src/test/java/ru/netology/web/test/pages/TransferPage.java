@@ -7,46 +7,46 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 public class TransferPage {
+    
+    private SelenideElement amountInput = $("[data-test-id='amount'] input");
+    private SelenideElement fromInput = $("[data-test-id='from'] input");
+    private SelenideElement actionButton = $("[data-test-id='action-transfer']");
+    private SelenideElement errorNotification = $("[data-test-id='error-notification']");
+    private SelenideElement cancelButton = $("[data-test-id='action-cancel']");
+    private SelenideElement headerTransfer = $(byText("Пополнение карты"));
+
+    public TransferPage() {
+        headerTransfer.shouldBe(visible);
+    }
 
     public DashboardPage successfulTransfer(DataHelper.Transfer info) {
-        $("[data-test-id='amount'] input").setValue(info.getAmount().toString());
-        $("[data-test-id='from'] input").setValue(info.getCardFrom());
-        $("[data-test-id='action-transfer']").click();
+        amountInput.setValue(info.getAmount().toString());
+        fromInput.setValue(info.getCardFrom());
+        actionButton.click();
         return new DashboardPage();
     }
 
     public TransferPage emptyTransfer(String expectedError) {
-        $("[data-test-id='amount'] input").setValue("");
-        $("[data-test-id='from'] input").setValue("");
-        $("[data-test-id='action-transfer']").click();
-        $("[data-test-id='error-notification']").shouldBe(visible);
-        return new TransferPage();
+        amountInput.setValue("");
+        fromInput.setValue("");
+        actionButton.click();
+        errorNotification.shouldBe(visible);
+        return null;
     }
 
     public DashboardPage cancelTransfer(DataHelper.Transfer info) {
-        $("[data-test-id='amount'] input").setValue(info.getAmount().toString());
-        $("[data-test-id='from'] input").setValue(info.getCardFrom());
-        $("[data-test-id='action-cancel']").click();
+        amountInput.setValue(info.getAmount().toString());
+        fromInput.setValue(info.getCardFrom());
+        cancelButton.click();
         return new DashboardPage();
     }
 
-    public TransferPage unSuccessfulTransfer(String expectedError) {
-        $("[data-test-id='amount'] input").setValue("15000");
-        $("[data-test-id='from'] input").setValue(DataHelper.card2);
-        $("[data-test-id='action-transfer']").click();
-        $("[data-test-id='error-notification']").shouldBe(visible);
-        return new TransferPage();
-    }
-
-    public TransferPage oneToOneTransfer(String expectedError) {
-        $("[data-test-id='amount'] input").setValue("1000");
-        $("[data-test-id='from'] input").setValue(DataHelper.card1);
-        $("[data-test-id='action-transfer']").click();
-        $("[data-test-id='error-notification']").shouldBe(visible);
-        return new TransferPage();
+    public void errorOnTheSite(String expectedError) {
+        errorNotification.shouldBe(visible);
     }
 
 }
